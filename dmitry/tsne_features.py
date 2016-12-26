@@ -8,7 +8,7 @@ from sklearn.preprocessing import normalize
 from ml_metrics import auc
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import StandardScaler
-from tsne import bh_sne
+from sklearn.manifold import TSNE
 from santander_preprocess import *
 
 INPUT_PATH = '../data/input/'
@@ -29,7 +29,8 @@ X = train[flist].append(test[flist], ignore_index=True).values.astype('float64')
 svd = TruncatedSVD(n_components=30)
 X_svd = svd.fit_transform(X)
 X_scaled = StandardScaler().fit_transform(X_svd)
-feats_tsne = bh_sne(X_scaled)
+model = TSNE(n_components=2, random_state=0)
+feats_tsne = model.fit_transform(X_scaled)
 feats_tsne = pd.DataFrame(feats_tsne, columns=['tsne1', 'tsne2'])
 feats_tsne['ID'] = train[['ID']].append(test[['ID']], ignore_index=True)['ID'].values
 train = pd.merge(train, feats_tsne, on='ID', how='left')
